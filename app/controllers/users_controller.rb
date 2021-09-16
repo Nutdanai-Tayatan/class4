@@ -64,13 +64,15 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:email, :name, :birthdate)
+      params.require(:user).permit(:email, :name, :birthdate ,:address,:postal_code)    
     end
 
   public 
     def create_users
       name = params[:name]
       email = params[:email]
-      @user = User.create(name:name, email:email)
+      address = params[:address]
+      postal_code = params[:postal_code]
+      @user = User.create(name:name, email:email, address:address, postal_code:postal_code)
     end
 end
