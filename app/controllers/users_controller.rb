@@ -49,11 +49,29 @@ class UsersController < ApplicationController
 
   # DELETE /users/1 or /users/1.json
   def destroy
+    @user.posts.each do |p|
+      p.destroy
+    end
     @user.destroy
     # respond_to do |format|
     #   format.html { redirect_to users_url, notice: "User was successfully destroyed." }
     #   format.json { head :no_content }
     # end
+  end
+
+  def create_fast
+    name = params[:name]
+    email = params[:email]
+    @user = User.create(name:name,email:email)
+
+  end
+
+  def destroy_all
+    Post.all.each do |p| 
+      p.destroy
+    end
+    User.destroy_all
+    redirect_to users_path
   end
 
   private
@@ -64,15 +82,29 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:email, :name, :birthdate ,:address,:postal_code)    
+      params.require(:user).permit(:email, :name, :birthdate ,:postal_code ,:address ,:pass)
     end
 
-  public 
-    def create_users
-      name = params[:name]
-      email = params[:email]
-      address = params[:address]
-      postal_code = params[:postal_code]
-      @user = User.create(name:name, email:email, address:address, postal_code:postal_code)
-    end
+
+    public
+      def main
+        @user = User.new()
+      end
+
+
+
+      def login
+        @user = User.new(user_params)
+
+       respond_to do |format|
+            if @user.login
+              format.html { redirect_to user_path(@user.id) }
+
+            else
+              format.html { render :main, status: :unprocessable_entity }
+            end
+        end
+      end
+
+
 end
